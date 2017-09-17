@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>PouchDB TryOut</h1>
+      <form class="scrape" action="index.html" method="post">
+        <input type="text" autofocus placeholder="Submit to database">
+        <button type="submit" name="button">Submit</button>
+      </form>
+      <button type="button" class="btn2" name="button">Get Data</button>
+      <div class="response">
+
+      </div>
+    </div>
+    <script type="text/javascript">
+    const electron = require("electron");
+const { ipcRenderer } = electron;
+const btn2 = document.querySelector(".btn2");
+const responseDiv = document.querySelector(".response");
+const form = document.querySelector(".scrape");
+form.addEventListener("submit", event => {
+	event.preventDefault();
+	const info = event.target[0].value;
+	ipcRenderer.send("info", info);
+	event.target[0].value = "";
+});
+
+btn2.addEventListener("click", event => {
+	ipcRenderer.send("get");
+});
+
+ipcRenderer.on("return", (event, information) => {
+	console.log(information);
+	const rows = information.rows;
+	rows.forEach((elm, ind, arr) => {
+		const p = document.createElement("p");
+		p.innerHTML = elm.doc.information;
+		responseDiv.appendChild(p);
+	});
+});
+</script>
+  </body>
+</html>
